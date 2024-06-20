@@ -4,20 +4,24 @@ const sharp = require("sharp");
 
 exports.createBook = async (req, res, next) => {
   const bookObject = JSON.parse(req.body.book);
+  //On supprime l'id recupéré ainsi que le userID car on préfère par sécurité le récupérer nous meme
   delete bookObject._id;
   delete bookObject._userId;
   const { buffer, originalname } = req.file;
   const name = originalname.split(" ").join("_");
+  //On défini un nouveau nom à l'image pour éviter les doublons et on lui met l'extension webp
   const ref = Date.now() + name + ".webp";
+  //On utilise sharp pour changer le format en Webp avec une qualité de 50%
   await sharp(buffer)
     .webp({ quality: 50 })
     .toFile("./images/" + ref);
+  //On défini les valeurs du nouveau book en ajoutant l'id authentifié et l'image compressée
   const book = new Book({
     ...bookObject,
     userId: req.auth.userId,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${ref}`,
   });
-
+  //Création du nouvel objet book
   book
     .save()
     .then(() => {
