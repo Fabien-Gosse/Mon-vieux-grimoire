@@ -9,7 +9,7 @@ const password = require("./utils/password");
 
 mongoose
   .connect(
-    `mongodb+srv://Safenn:${password}@cluster0.fqfmkak.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
+    `mongodb+srv://Users:${password}@cluster0.fqfmkak.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))
