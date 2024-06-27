@@ -7,15 +7,11 @@ dotenv.config();
 
 const bookRoutes = require("./routes/book");
 const userRoutes = require("./routes/user");
-const nosqlUser = process.env.NOSQL_USER;
-const nosqlPassword = process.env.NOSQL_PASSWORD;
+const mongodbUri = process.env.MONGODB_URI;
 
 //Connection à la base de donnée grâce au package mongoose
 mongoose
-  .connect(
-    `mongodb+srv://${nosqlUser}:${nosqlPassword}@cluster0.fqfmkak.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`,
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
+  .connect(mongodbUri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 

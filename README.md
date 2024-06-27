@@ -20,7 +20,7 @@
 
 # DotEnv is needed to connect your server
 
-## You can use the .env.sample to know the variable needed, complete them, and rename is as .env to run on your server.
+## You can use the .env.sample to know the variable needed, complete them, and rename it as .env to run on your server.
 
 ## DotEnv installation :
 
