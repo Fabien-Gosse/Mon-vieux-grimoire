@@ -3,6 +3,7 @@ const fs = require("fs");
 const sharp = require("sharp");
 
 exports.createBook = async (req, res, next) => {
+  //l'objet req etant un Json sous forme de chaine de caractère, il nous faut la parser (car fichier)
   const bookObject = JSON.parse(req.body.book);
   //On supprime l'id recupéré ainsi que le userID car on préfère par sécurité le récupérer nous meme
   delete bookObject._id;
@@ -82,6 +83,7 @@ exports.deleteBook = (req, res, next) => {
         res.status(403).json({ message: "unauthorized request" });
       } else {
         const filename = book.imageUrl.split("/images/")[1];
+        //On utilise la méthode unlink du package fs pour supprimer l'image dans le systeme de fichié
         fs.unlink(`images/${filename}`, () => {
           Book.deleteOne({ _id: req.params.id })
             .then(() => {
@@ -120,34 +122,26 @@ exports.getBestRating = (req, res, next) => {
 
 exports.ratingBook = async (req, res, next) => {
   const rating = req.body.rating;
-  console.log(rating);
   const userId = req.auth.userId;
   const newRating = { ...req.body, grade: rating };
   delete newRating._id;
-  console.log(newRating);
   // On recupère le livre dans la base de donné avec l'ID en params
   Book.findById({ _id: req.params.id })
     .then((book) => {
-      // Si le livre n'existe pas, on renoie une erreur
+      // Si le livre n'existe pas, on renvoie une erreur
       if (book == null) {
         res.status(404).json({ message: "Livre introuvable !" });
       } else {
-        console.log(book);
         // On compare les UserID dans le rating du livre, si on trouve la même celle de l'utilisateur => erreur
         const databaseRatings = book.ratings;
-        console.log(databaseRatings);
         const isCurrentUserRatingNew = databaseRatings.find(
           (rating) => rating.userId == userId
         );
         if (isCurrentUserRatingNew != null) {
           res.status(400).json({ message: "Vous avez déjà noté se livre !" });
         }
-        console.log(isCurrentUserRatingNew);
-        console.log(newRating);
         // On push la note et l'id utilisateur dans les ratings
         databaseRatings.push(newRating);
-        console.log(databaseRatings);
-        console.log(book);
         // On recupère la nouvelle moyenne des notes du livre dans averageGrades
         const averageGrades = AverageRating(databaseRatings);
         book.averageRating = averageGrades;
