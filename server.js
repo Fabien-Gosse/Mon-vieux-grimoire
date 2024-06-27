@@ -1,6 +1,7 @@
 const http = require("http");
 const app = require("./app");
 
+// On vérifie si le port est une sting(sans nombre) ou si c'est bien un nombre entier, sinon on retourne faux
 const normalizePort = (val) => {
   const port = parseInt(val, 10);
 
@@ -15,7 +16,9 @@ const normalizePort = (val) => {
 const port = normalizePort(process.env.PORT || "4000");
 app.set("port", port);
 
+//gestion des erreurs
 const errorHandler = (error) => {
+  //On vérifie si l'erreur est lié à la connection au socket
   if (error.syscall !== "listen") {
     throw error;
   }
@@ -23,10 +26,12 @@ const errorHandler = (error) => {
   const bind =
     typeof address === "string" ? "pipe " + address : "port: " + port;
   switch (error.code) {
+    //Vérification si le chemin existe et si la permission est suffisante pour y acceder
     case "EACCES":
       console.error(bind + " requires elevated privileges.");
       process.exit(1);
       break;
+    //Vérification si le port nest pas déjà en cours d'utilisation par la machine qui demande access
     case "EADDRINUSE":
       console.error(bind + " is already in use.");
       process.exit(1);

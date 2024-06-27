@@ -3,6 +3,7 @@ const fs = require("fs");
 const sharp = require("sharp");
 
 exports.createBook = async (req, res, next) => {
+  //l'objet req etant un Json sous forme de chaine de caractère, il nous faut la parser (car fichier)
   const bookObject = JSON.parse(req.body.book);
   //On supprime l'id recupéré ainsi que le userID car on préfère par sécurité le récupérer nous meme
   delete bookObject._id;
@@ -82,6 +83,7 @@ exports.deleteBook = (req, res, next) => {
         res.status(403).json({ message: "unauthorized request" });
       } else {
         const filename = book.imageUrl.split("/images/")[1];
+        //On utilise la méthode unlink du package fs pour supprimer l'image dans le systeme de fichié
         fs.unlink(`images/${filename}`, () => {
           Book.deleteOne({ _id: req.params.id })
             .then(() => {
@@ -126,7 +128,7 @@ exports.ratingBook = async (req, res, next) => {
   // On recupère le livre dans la base de donné avec l'ID en params
   Book.findById({ _id: req.params.id })
     .then((book) => {
-      // Si le livre n'existe pas, on renoie une erreur
+      // Si le livre n'existe pas, on renvoie une erreur
       if (book == null) {
         res.status(404).json({ message: "Livre introuvable !" });
       } else {
